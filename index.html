@@ -252,7 +252,8 @@
                 const baseUrl = '${trackingUrl}';
                 const queryParams = '?adId=' + encodeURIComponent(trackingData.adId) + 
                                    '&time=' + trackingData.timestamp + 
-                                   '&type=viewable';
+                                   '&type=viewable
+                                   &ngrok-skip-browser-warning=true';
                 
                 // Multiple tracking methods (same as before)
                 const img = new Image();
@@ -580,7 +581,6 @@
                 headers: {
                             'ngrok-skip-browser-warning': 'true'
                         }
-
             }).then(() => {
                 logMessage('Direct tracking test sent via Fetch');
             }).catch(err => {
