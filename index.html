@@ -576,7 +576,11 @@
             // Test with fetch
             fetch(trackingUrl + '?test=direct&time=' + Date.now(), {
                 method: 'GET',
-                mode: 'no-cors'
+                mode: 'no-cors',
+                headers: {
+                            'ngrok-skip-browser-warning': 'true'
+                        }
+
             }).then(() => {
                 logMessage('Direct tracking test sent via Fetch');
             }).catch(err => {
