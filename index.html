@@ -1,163 +1,160 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <title>Bid Response Viewability Injector</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            
+            .container {
+                display: flex;
+                gap: 20px;
+            }
+            
+            .column {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            textarea {
+                width: 100%;
+                height: 300px;
+                font-family: monospace;
+                padding: 10px;
+                box-sizing: border-box;
+            }
+            
+            .button-group {
+                margin: 10px 0;
+            }
+            
+            button {
+                padding: 8px 16px;
+                margin-right: 10px;
+                cursor: pointer;
+            }
+            
+            .ad-container {
+                border: 1px solid #ccc;
+                margin-top: 20px;
+                padding: 10px;
+                min-height: 300px;
+            }
+            
+            .ad-frame {
+                width: 100%;
+                height: 300px;
+                border: none;
+            }
+            
+            #log {
+                margin-top: 20px;
+                padding: 10px;
+                background: #f5f5f5;
+                border: 1px solid #ddd;
+                height: 150px;
+                overflow-y: auto;
+                font-family: monospace;
+                font-size: 12px;
+            }
+            
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .tracking-url {
+                width: 300px;
+                padding: 8px;
+            }
+    
+            /* New styles for viewability testing */
+            #viewability-test-container {
+                margin-top: 20px;
+                border: 1px solid #ccc;
+                padding: 10px;
+            }
+    
+            .scroll-container {
+                height: 600px;
+                overflow-y: auto;
+                border: 2px solid #ccc;
+                position: relative;
+            }
+    
+            .spacer {
+                height: 200px;
+                background: #eee;
+            }
+    
+            .viewability-test-area {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #f5f5f5;
+                border: 1px solid #999;
+            }
+    
+            .viewability-test-area .ad-wrapper {
+                position: relative;
+                overflow: hidden;
+            }
+    
+            .viewability-percentage {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: rgba(0,0,0,0.7);
+                color: white;
+                padding: 5px;
+                border-radius: 3px;
+            }
+    
+            #precise-test-controls {
+                margin-bottom: 10px;
+            }
 
-<head>
-    <title>Bid Response Viewability Injector</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+            #tracking-config {
+                margin-top: 20px;
+                padding: 10px;
+                background: #f0f0f0;
+                border: 1px solid #ddd;
+            }
+    
+            .config-input {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+    
+            .config-input label {
+                margin-right: 10px;
+                width: 200px;
+            }
+            
+            #prebid-test-container {
+                margin-top: 20px;
+                border: 1px solid #ccc;
+                padding: 10px;
+            }
 
-        .container {
-            display: flex;
-            gap: 20px;
-        }
-
-        .column {
-            flex: 1;
-            min-width: 0;
-        }
-
-        textarea {
-            width: 100%;
-            height: 300px;
-            font-family: monospace;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .button-group {
-            margin: 10px 0;
-        }
-
-        button {
-            padding: 8px 16px;
-            margin-right: 10px;
-            cursor: pointer;
-        }
-
-        .ad-container {
-            border: 1px solid #ccc;
-            margin-top: 20px;
-            padding: 10px;
-            min-height: 300px;
-        }
-
-        .ad-frame {
-            width: 100%;
-            height: 300px;
-            border: none;
-        }
-
-        #log {
-            margin-top: 20px;
-            padding: 10px;
-            background: #f5f5f5;
-            border: 1px solid #ddd;
-            height: 150px;
-            overflow-y: auto;
-            font-family: monospace;
-            font-size: 12px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .tracking-url {
-            width: 300px;
-            padding: 8px;
-        }
-
-        /* New styles for viewability testing */
-        #viewability-test-container {
-            margin-top: 20px;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-
-        .scroll-container {
-            height: 600px;
-            overflow-y: auto;
-            border: 2px solid #ccc;
-            position: relative;
-        }
-
-        .spacer {
-            height: 200px;
-            background: #eee;
-        }
-
-        .viewability-test-area {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f5f5f5;
-            border: 1px solid #999;
-        }
-
-        .viewability-test-area .ad-wrapper {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .viewability-percentage {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px;
-            border-radius: 3px;
-        }
-
-        #precise-test-controls {
-            margin-bottom: 10px;
-        }
-
-        #tracking-config {
-            margin-top: 20px;
-            padding: 10px;
-            background: #f0f0f0;
-            border: 1px solid #ddd;
-        }
-
-        .config-input {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .config-input label {
-            margin-right: 10px;
-            width: 200px;
-        }
-
-        #prebid-test-container {
-            margin-top: 20px;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-
-        #prebid-test-area {
-            min-height: 450px;
-        }
-    </style>
-</head>
-
+            #prebid-test-area {
+                min-height: 450px;
+            }
+        </style>
+    </head>
 <body>
     <div class="header">
         <h1>Bid Response Viewability Injector</h1>
         <div>
             <label for="tracking-url">Tracking URL:</label>
-            <input type="text" id="tracking-url" class="tracking-url"
-                value="https://e044-212-143-164-29.ngrok-free.app">
+            <input type="text" id="tracking-url" class="tracking-url" value="https://e044-212-143-164-29.ngrok-free.app">
         </div>
     </div>
 
@@ -172,30 +169,30 @@
             <input type="number" id="required-viewable-time" min="1000" max="20000" step="1000" value="5000">
         </div>
     </div>
-
-
+    
+    
     <div class="container">
         <div class="column">
             <h3>Input Bid Response JSON</h3>
             <textarea id="input-bid"></textarea>
-
+            
             <div class="button-group">
                 <button id="process-btn">Process Bid Response</button>
                 <button id="load-sample-btn">Load Sample</button>
             </div>
         </div>
-
+        
         <div class="column">
             <h3>Modified Bid Response</h3>
             <textarea id="output-bid" readonly></textarea>
-
+            
             <div class="button-group">
                 <button id="test-ad-btn">Test Ad</button>
                 <button id="copy-btn">Copy to Clipboard</button>
             </div>
         </div>
     </div>
-
+    
     <div class="ad-container">
         <h3>Ad Preview</h3>
         <div id="ad-preview"></div>
@@ -205,7 +202,7 @@
     <div id="log">
         <div>Log events will appear here...</div>
     </div>
-
+    
     <!-- Prebid-style Iframe Testing -->
     <div id="prebid-test-container">
         <h3>Prebid-style Iframe Testing</h3>
@@ -227,19 +224,19 @@
         </div>
         <div id="precise-test-area"></div>
     </div>
-
+    
     <script>
         // Function to inject viewability tracker into bid response
         function injectViewabilityTracker(bidResponse, trackingUrl, viewabilityConfig) {
-            try {
-                // Trim any spaces from the tracking URL
-                trackingUrl = trackingUrl.trim();
-
-                // Parse the bid response if it's a string
-                const bid = typeof bidResponse === 'string' ? JSON.parse(bidResponse) : bidResponse;
-
-                // Create a more robust viewability tracker script
-                const trackerScript = `
+    try {
+        // Trim any spaces from the tracking URL
+        trackingUrl = trackingUrl.trim();
+        
+        // Parse the bid response if it's a string
+        const bid = typeof bidResponse === 'string' ? JSON.parse(bidResponse) : bidResponse;
+        
+        // Create a more robust viewability tracker script
+        const trackerScript = `
         <script>
         (function() {
             console.log('Advanced Viewability tracker initialized');
@@ -252,8 +249,8 @@
                 const baseUrl = '${trackingUrl}';
                 const queryParams = '?adId=' + encodeURIComponent(trackingData.adId) + 
                                    '&time=' + trackingData.timestamp + 
-                                   '&type=viewable
-                                   &ngrok-skip-browser-warning=true';
+                                   '&type=viewable' +
+                                   '&ngrok-skip-browser-warning=true';
                 
                 // Multiple tracking methods (same as before)
                 const img = new Image();
@@ -261,9 +258,11 @@
                 document.body.appendChild(img);
                 
                 try {
-                    fetch(baseUrl + queryParams, { method: 'GET', mode: 'no-cors', headers: {
-                            'ngrok-skip-browser-warning': 'true'
-                        }});
+                    // Add ngrok header via URL parameter since no-cors mode restricts custom headers
+                    fetch(baseUrl + queryParams, { 
+                        method: 'GET', 
+                        mode: 'no-cors'
+                    });
                 } catch(e) {
                     console.log('Fetch error:', e);
                 }
@@ -271,6 +270,8 @@
                 try {
                     const xhr = new XMLHttpRequest();
                     xhr.open('GET', baseUrl + queryParams, true);
+                    // Try both approaches
+                    xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
                     xhr.send();
                 } catch(e) {
                     console.log('XHR error:', e);
@@ -392,69 +393,69 @@
         })();
         <\/script>
         `;
-
-                // Existing logic to inject the script into the bid response remains the same
-                if (bid.seatbid && Array.isArray(bid.seatbid)) {
-                    const modifiedBid = JSON.parse(JSON.stringify(bid));
-
-                    for (let i = 0; i < modifiedBid.seatbid.length; i++) {
-                        const seatbid = modifiedBid.seatbid[i];
-
-                        if (seatbid.bid && Array.isArray(seatbid.bid)) {
-                            for (let j = 0; j < seatbid.bid.length; j++) {
-                                const bidItem = seatbid.bid[j];
-
-                                if (bidItem.adm) {
-                                    modifiedBid.seatbid[i].bid[j].adm = bidItem.adm + trackerScript;
-                                }
-                            }
+        
+        // Existing logic to inject the script into the bid response remains the same
+        if (bid.seatbid && Array.isArray(bid.seatbid)) {
+            const modifiedBid = JSON.parse(JSON.stringify(bid));
+            
+            for (let i = 0; i < modifiedBid.seatbid.length; i++) {
+                const seatbid = modifiedBid.seatbid[i];
+                
+                if (seatbid.bid && Array.isArray(seatbid.bid)) {
+                    for (let j = 0; j < seatbid.bid.length; j++) {
+                        const bidItem = seatbid.bid[j];
+                        
+                        if (bidItem.adm) {
+                            modifiedBid.seatbid[i].bid[j].adm = bidItem.adm + trackerScript;
                         }
                     }
-
-                    return modifiedBid;
-                } else if (bid.adm) {
-                    return {
-                        ...bid,
-                        adm: bid.adm + trackerScript
-                    };
-                } else {
-                    throw new Error('No adm field found in bid response');
                 }
-            } catch (error) {
-                console.error('Error injecting viewability tracker:', error);
-                return bidResponse; // Return original if there's an error
             }
+            
+            return modifiedBid;
+        } else if (bid.adm) {
+            return {
+                ...bid,
+                adm: bid.adm + trackerScript
+            };
+        } else {
+            throw new Error('No adm field found in bid response');
         }
+    } catch (error) {
+        console.error('Error injecting viewability tracker:', error);
+        return bidResponse; // Return original if there's an error
+    }
+}
 
         // Function to process bid response
         function processResponse() {
             const inputText = document.getElementById('input-bid').value.trim();
             const trackingUrl = document.getElementById('tracking-url').value.trim();
-
+            
             // Get configuration values
             const viewabilityThreshold = parseFloat(document.getElementById('viewability-threshold').value);
             const requiredViewableTime = parseInt(document.getElementById('required-viewable-time').value);
-
+            
             const viewabilityConfig = {
                 threshold: viewabilityThreshold,
                 time: requiredViewableTime
             };
-
+            
             if (!inputText) {
                 logMessage('Error: Please enter a bid response');
                 return;
             }
-
+            
             try {
                 // Parse input JSON
                 const bidResponse = JSON.parse(inputText);
-
+                
                 // Inject viewability tracker with dynamic configuration
                 const modifiedResponse = injectViewabilityTracker(bidResponse, trackingUrl, viewabilityConfig);
-
+                
                 // Display output
                 document.getElementById('output-bid').value = JSON.stringify(modifiedResponse, null, 2);
-
+                
                 logMessage(`Successfully processed bid response with threshold ${viewabilityThreshold} and ${requiredViewableTime}ms tracking`);
             } catch (error) {
                 logMessage('Error processing bid response: ' + error.message);
@@ -491,26 +492,26 @@
                     }
                 ]
             };
-
+            
             document.getElementById('input-bid').value = JSON.stringify(sampleBid, null, 2);
             logMessage('Loaded sample bid response');
         }
-
+        
         // Function to test the ad
         function testAd() {
             const outputText = document.getElementById('output-bid').value.trim();
-
+            
             if (!outputText) {
                 logMessage('Error: No modified bid response to test');
                 return;
             }
-
+            
             try {
                 const modifiedBid = JSON.parse(outputText);
-
+                
                 // Find the adm field in the nested structure
                 let admContent = null;
-
+                
                 if (modifiedBid.seatbid && Array.isArray(modifiedBid.seatbid)) {
                     // Look for adm in nested structure
                     for (const seatbid of modifiedBid.seatbid) {
@@ -528,26 +529,26 @@
                     // Simple case
                     admContent = modifiedBid.adm;
                 }
-
+                
                 if (!admContent) {
                     throw new Error('No adm field found in the modified bid response');
                 }
-
+                
                 // Create iframe for testing
                 const adPreview = document.getElementById('ad-preview');
                 adPreview.innerHTML = '';
-
+                
                 const iframe = document.createElement('iframe');
                 iframe.className = 'ad-frame';
                 adPreview.appendChild(iframe);
-
+                
                 // Wait for iframe to load then write content
                 setTimeout(() => {
                     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
                     iframeDoc.open();
                     iframeDoc.write(admContent);
                     iframeDoc.close();
-
+                    
                     logMessage('Ad loaded for testing');
                 }, 100);
             } catch (error) {
@@ -555,7 +556,7 @@
                 console.error(error);
             }
         }
-
+        
         // Function to copy output to clipboard
         function copyToClipboard() {
             const outputEl = document.getElementById('output-bid');
@@ -563,7 +564,7 @@
             document.execCommand('copy');
             logMessage('Copied to clipboard');
         }
-
+        
         // Function to test the tracking URL directly
         function testTrackingUrl() {
             const trackingUrl = document.getElementById('tracking-url').value.trim();
@@ -571,57 +572,54 @@
                 logMessage('Error: Please enter a tracking URL');
                 return;
             }
-
+            
             logMessage('Testing tracking URL: ' + trackingUrl);
-
+            
             // Test with fetch
-            fetch(trackingUrl + '?test=direct&time=' + Date.now(), {
+            fetch(trackingUrl + '?test=direct&time=' + Date.now() + '&ngrok-skip-browser-warning=true', {
                 method: 'GET',
-                mode: 'no-cors',
-                headers: {
-                            'ngrok-skip-browser-warning': 'true'
-                        }
+                mode: 'no-cors'
             }).then(() => {
                 logMessage('Direct tracking test sent via Fetch');
             }).catch(err => {
                 logMessage('Direct tracking test error via Fetch: ' + err.message);
             });
-
+            
             // Test with image
             const img = new Image();
             img.onload = () => logMessage('Direct tracking test sent via Image');
             img.onerror = () => logMessage('Direct tracking test error via Image');
-            img.src = trackingUrl + '?test=direct&time=' + Date.now();
+            img.src = trackingUrl + '?test=direct&time=' + Date.now() + '&ngrok-skip-browser-warning=true';
         }
-
+        
         // Function to log messages
         function logMessage(message) {
             const logEl = document.getElementById('log');
             const timestamp = new Date().toLocaleTimeString();
             logEl.innerHTML = '<div>[' + timestamp + '] ' + message + '</div>' + logEl.innerHTML;
         }
-
+        
         // Listen for messages from the iframe
-        window.addEventListener('message', function (event) {
+        window.addEventListener('message', function(event) {
             logMessage(event.data);
         });
-
+        
         // Add event listeners when the DOM is loaded
-        window.onload = function () {
+        window.onload = function() {
             document.getElementById('process-btn').addEventListener('click', processResponse);
             document.getElementById('load-sample-btn').addEventListener('click', loadSample);
             document.getElementById('test-ad-btn').addEventListener('click', testAd);
             document.getElementById('copy-btn').addEventListener('click', copyToClipboard);
-
+            
             // Add a test tracking button to the UI
             const trackingBtn = document.createElement('button');
             trackingBtn.id = 'test-tracking-btn';
             trackingBtn.textContent = 'Test Tracking URL';
             trackingBtn.addEventListener('click', testTrackingUrl);
-
+            
             const urlContainer = document.querySelector('.header > div');
             urlContainer.appendChild(trackingBtn);
-
+            
             logMessage('Tool initialized. Paste your bid response JSON and click Process');
         };
 
@@ -657,7 +655,7 @@
 
             // Retrieve the modified bid response
             const outputText = document.getElementById('output-bid').value.trim();
-
+            
             if (!outputText) {
                 logMessage('Error: No modified bid response to test');
                 return;
@@ -665,7 +663,7 @@
 
             try {
                 const modifiedBid = JSON.parse(outputText);
-
+                
                 // Find the adm field
                 let admContent = null;
                 if (modifiedBid.seatbid && Array.isArray(modifiedBid.seatbid)) {
@@ -721,7 +719,7 @@
                                 }
                             });
                         },
-                        {
+                        { 
                             root: scrollContainer,
                             threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
                         }
@@ -741,58 +739,58 @@
         // Modify window.onload to add new event listeners
 
         function testPrebidRendering() {
-            const outputText = document.getElementById('output-bid').value.trim();
-
-            if (!outputText) {
-                logMessage('Error: No modified bid response to test in Prebid mode');
-                return;
-            }
-
-            try {
-                const modifiedBid = JSON.parse(outputText);
-
-                // Find the adm field in the bid response
-                let admContent = null;
-
-                if (modifiedBid.seatbid && Array.isArray(modifiedBid.seatbid)) {
-                    for (const seatbid of modifiedBid.seatbid) {
-                        if (seatbid.bid && Array.isArray(seatbid.bid)) {
-                            for (const bidItem of seatbid.bid) {
-                                if (bidItem.adm) {
-                                    admContent = bidItem.adm;
-                                    break;
-                                }
-                            }
+    const outputText = document.getElementById('output-bid').value.trim();
+    
+    if (!outputText) {
+        logMessage('Error: No modified bid response to test in Prebid mode');
+        return;
+    }
+    
+    try {
+        const modifiedBid = JSON.parse(outputText);
+        
+        // Find the adm field in the bid response
+        let admContent = null;
+        
+        if (modifiedBid.seatbid && Array.isArray(modifiedBid.seatbid)) {
+            for (const seatbid of modifiedBid.seatbid) {
+                if (seatbid.bid && Array.isArray(seatbid.bid)) {
+                    for (const bidItem of seatbid.bid) {
+                        if (bidItem.adm) {
+                            admContent = bidItem.adm;
+                            break;
                         }
-                        if (admContent) break;
                     }
-                } else if (modifiedBid.adm) {
-                    admContent = modifiedBid.adm;
                 }
-
-                if (!admContent) {
-                    throw new Error('No adm field found in the modified bid response');
-                }
-
-                // Clear previous test content
-                const prebidTestArea = document.getElementById('prebid-test-area');
-                prebidTestArea.innerHTML = '';
-
-                // Create the publisher page iframe (simulating the main page)
-                const publisherIframe = document.createElement('iframe');
-                publisherIframe.className = 'ad-frame';
-                publisherIframe.style.width = '100%';
-                publisherIframe.style.height = '400px';
-                publisherIframe.style.border = '2px solid #999';
-                prebidTestArea.appendChild(publisherIframe);
-
-                // Wait for publisher iframe to load, then add content with friendly iframe
-                setTimeout(() => {
-                    const publisherDoc = publisherIframe.contentDocument || publisherIframe.contentWindow.document;
-
-                    // Create basic publisher page structure
-                    publisherDoc.open();
-                    publisherDoc.write(`
+                if (admContent) break;
+            }
+        } else if (modifiedBid.adm) {
+            admContent = modifiedBid.adm;
+        }
+        
+        if (!admContent) {
+            throw new Error('No adm field found in the modified bid response');
+        }
+        
+        // Clear previous test content
+        const prebidTestArea = document.getElementById('prebid-test-area');
+        prebidTestArea.innerHTML = '';
+        
+        // Create the publisher page iframe (simulating the main page)
+        const publisherIframe = document.createElement('iframe');
+        publisherIframe.className = 'ad-frame';
+        publisherIframe.style.width = '100%';
+        publisherIframe.style.height = '400px';
+        publisherIframe.style.border = '2px solid #999';
+        prebidTestArea.appendChild(publisherIframe);
+        
+        // Wait for publisher iframe to load, then add content with friendly iframe
+        setTimeout(() => {
+            const publisherDoc = publisherIframe.contentDocument || publisherIframe.contentWindow.document;
+            
+            // Create basic publisher page structure
+            publisherDoc.open();
+            publisherDoc.write(`
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -845,77 +843,77 @@
                 </body>
                 </html>
             `);
-                    publisherDoc.close();
-
-                    // Now create the "ad iframe" inside the publisher page (similar to how Prebid would do it)
-                    setTimeout(() => {
-                        const adContainer = publisherDoc.getElementById('ad-container');
-
-                        // Create the ad iframe (this is the one Prebid would create)
-                        const adIframe = publisherDoc.createElement('iframe');
-                        adIframe.style.width = '300px';
-                        adIframe.style.height = '250px';
-                        adIframe.style.border = '0';
-                        adIframe.scrolling = 'no';
-                        adIframe.marginWidth = '0';
-                        adIframe.marginHeight = '0';
-                        adIframe.frameBorder = '0';
-                        adIframe.style.overflow = 'hidden';
-                        adContainer.appendChild(adIframe);
-
-                        // Finally, write the ad content to the ad iframe
-                        setTimeout(() => {
-                            const adDoc = adIframe.contentDocument || adIframe.contentWindow.document;
-                            adDoc.open();
-                            adDoc.write(admContent);
-                            adDoc.close();
-
-                            logMessage('📣 Prebid-style ad rendered (iframe within iframe)');
-
-                            // Add scroll controls to demonstrate viewability challenges in nested iframes
-                            const scrollControls = publisherDoc.createElement('div');
-                            scrollControls.style.margin = '20px 0';
-                            scrollControls.innerHTML = `
+            publisherDoc.close();
+            
+            // Now create the "ad iframe" inside the publisher page (similar to how Prebid would do it)
+            setTimeout(() => {
+                const adContainer = publisherDoc.getElementById('ad-container');
+                
+                // Create the ad iframe (this is the one Prebid would create)
+                const adIframe = publisherDoc.createElement('iframe');
+                adIframe.style.width = '300px';
+                adIframe.style.height = '250px';
+                adIframe.style.border = '0';
+                adIframe.scrolling = 'no';
+                adIframe.marginWidth = '0';
+                adIframe.marginHeight = '0';
+                adIframe.frameBorder = '0';
+                adIframe.style.overflow = 'hidden';
+                adContainer.appendChild(adIframe);
+                
+                // Finally, write the ad content to the ad iframe
+                setTimeout(() => {
+                    const adDoc = adIframe.contentDocument || adIframe.contentWindow.document;
+                    adDoc.open();
+                    adDoc.write(admContent);
+                    adDoc.close();
+                    
+                    logMessage('📣 Prebid-style ad rendered (iframe within iframe)');
+                    
+                    // Add scroll controls to demonstrate viewability challenges in nested iframes
+                    const scrollControls = publisherDoc.createElement('div');
+                    scrollControls.style.margin = '20px 0';
+                    scrollControls.innerHTML = `
                         <button id="scroll-down">Scroll Down</button>
                         <button id="scroll-up">Scroll Up</button>
                     `;
-                            publisherDoc.body.insertBefore(scrollControls, adContainer.parentNode);
-
-                            // Add event listeners for scroll buttons
-                            publisherDoc.getElementById('scroll-down').addEventListener('click', function () {
-                                publisherDoc.documentElement.scrollTop += 100;
-                                publisherDoc.body.scrollTop += 100; // For Safari
-                                logMessage('Publisher page scrolled down 100px');
-                            });
-
-                            publisherDoc.getElementById('scroll-up').addEventListener('click', function () {
-                                publisherDoc.documentElement.scrollTop -= 100;
-                                publisherDoc.body.scrollTop -= 100; // For Safari
-                                logMessage('Publisher page scrolled up 100px');
-                            });
-
-                        }, 100);
-                    }, 100);
+                    publisherDoc.body.insertBefore(scrollControls, adContainer.parentNode);
+                    
+                    // Add event listeners for scroll buttons
+                    publisherDoc.getElementById('scroll-down').addEventListener('click', function() {
+                        publisherDoc.documentElement.scrollTop += 100;
+                        publisherDoc.body.scrollTop += 100; // For Safari
+                        logMessage('Publisher page scrolled down 100px');
+                    });
+                    
+                    publisherDoc.getElementById('scroll-up').addEventListener('click', function() {
+                        publisherDoc.documentElement.scrollTop -= 100;
+                        publisherDoc.body.scrollTop -= 100; // For Safari
+                        logMessage('Publisher page scrolled up 100px');
+                    });
+                    
                 }, 100);
-
-            } catch (error) {
-                logMessage('Error testing Prebid-style rendering: ' + error.message);
-                console.error(error);
-            }
-        }
-        window.onload = function () {
+            }, 100);
+        }, 100);
+        
+    } catch (error) {
+        logMessage('Error testing Prebid-style rendering: ' + error.message);
+        console.error(error);
+    }
+}
+        window.onload = function() {
             // Existing event listeners
             document.getElementById('process-btn').addEventListener('click', processResponse);
             document.getElementById('load-sample-btn').addEventListener('click', loadSample);
             document.getElementById('test-ad-btn').addEventListener('click', testAd);
             document.getElementById('copy-btn').addEventListener('click', copyToClipboard);
-
+            
             // Add test tracking button 
             const trackingBtn = document.createElement('button');
             trackingBtn.id = 'test-tracking-btn';
             trackingBtn.textContent = 'Test Tracking URL';
             trackingBtn.addEventListener('click', testTrackingUrl);
-
+            
             const urlContainer = document.querySelector('.header > div');
             urlContainer.appendChild(trackingBtn);
 
@@ -923,10 +921,9 @@
             document.getElementById('create-test-environment').addEventListener('click', createPreciseViewabilityTest);
             document.getElementById('test-prebid-rendering').addEventListener('click', testPrebidRendering);
 
-
+            
             logMessage('Tool initialized. Paste your bid response JSON and click Process');
         };
     </script>
 </body>
-
 </html>
