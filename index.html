@@ -241,182 +241,183 @@
                 // Create a more robust viewability tracker script
                 const trackerScript = `
         <script>
-            (function() {
-    // Find our container - either the closest parent div or the body
-    function findContainer() {
-        // Try to find the closest parent div to this script
-        const scriptElement = document.currentScript;
-        if (scriptElement) {
-            let parent = scriptElement.parentElement;
-            while (parent && parent !== document.body) {
-                if (parent.tagName === 'DIV') {
-                    return parent;
+                (function() {
+        // Find our container - either the closest parent div or the body
+        function findContainer() {
+            // Try to find the closest parent div to this script
+            const scriptElement = document.currentScript;
+            if (scriptElement) {
+                let parent = scriptElement.parentElement;
+                while (parent && parent !== document.body) {
+                    if (parent.tagName === 'DIV') {
+                        return parent;
+                    }
+                    parent = parent.parentElement;
                 }
-                parent = parent.parentElement;
             }
+            return document.body;
         }
-        return document.body;
-    }
-
-    // Initialize tracking after ensuring we have a container
-    function initializeTracking() {
-        console.log('Advanced Viewability tracker initializing...');
-        
-        const container = findContainer();
-        console.log('Found container:', container);
-        
-        // Dynamic configuration from parent window
-        const VIEWABILITY_THRESHOLD = ${viewabilityConfig.threshold};
-        const REQUIRED_VIEWABLE_TIME = ${viewabilityConfig.time};
-        
-        function sendTrackingPing(trackingData) {
-            const baseUrl = '${trackingUrl}';
-            const queryParams = '?adId=' + encodeURIComponent(trackingData.adId) + 
-                               '&time=' + trackingData.timestamp + 
-                               '&type=viewable' +
-                               '&ngrok-skip-browser-warning=true';
+    
+        // Initialize tracking after ensuring we have a container
+        function initializeTracking() {
+            console.log('Advanced Viewability tracker initializing...');
             
-            // Multiple tracking methods for reliability
-            const img = new Image();
-            img.src = baseUrl + queryParams;
-            document.body.appendChild(img);
-            setTimeout(() => img.remove(), 5000); // Cleanup
+            const container = findContainer();
+            console.log('Found container:', container);
             
-            try {
-                fetch(baseUrl + queryParams, { 
-                    method: 'GET', 
-                    mode: 'no-cors'
-                });
-            } catch(e) {
-                console.log('Fetch error:', e);
-            }
+            // Dynamic configuration from parent window
+            const VIEWABILITY_THRESHOLD = ${viewabilityConfig.threshold};
+            const REQUIRED_VIEWABLE_TIME = ${viewabilityConfig.time};
             
-            try {
-                const xhr = new XMLHttpRequest();
-                xhr.open('GET', baseUrl + queryParams, true);
-                xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
-                xhr.send();
-            } catch(e) {
-                console.log('XHR error:', e);
-            }
-            
-            console.log('Tracking ping sent:', baseUrl + queryParams);
-        }
-        
-        // Create and setup tracker element
-        const tracker = document.createElement('div');
-        tracker.setAttribute('data-purpose', 'viewability-tracker');
-        tracker.style.cssText = `
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            pointer-events: none !important;
-            z-index: -1 !important;
-            opacity: 0 !important;
-            background: transparent !important;
-        `;
-        
-        // Ensure container has proper positioning
-        if (getComputedStyle(container).position === 'static') {
-            container.style.position = 'relative';
-        }
-        
-        // Add tracker to container
-        container.appendChild(tracker);
-        console.log('Tracker element added to container');
-        
-        // Advanced viewability tracking
-        let viewableStartTime = null;
-        let viewabilityTimer = null;
-        let impressionSent = false;
-        let observer = null;
-        
-        function resetTracking() {
-            if (viewableStartTime) {
-                clearTimeout(viewabilityTimer);
-                viewableStartTime = null;
-            }
-            impressionSent = false;
-            
-            if (observer) {
-                observer.disconnect();
-            }
-            
-            observer = new IntersectionObserver(
-                (entries) => {
-                    entries.forEach(entry => {
-                        const isViewable = entry.isIntersecting && 
-                                          entry.intersectionRatio >= VIEWABILITY_THRESHOLD;
-                        const isPageVisible = !document.hidden;
-                        
-                        if (isViewable && isPageVisible) {
-                            if (!viewableStartTime && !impressionSent) {
-                                viewableStartTime = Date.now();
-                                console.log('Ad started viewing, ratio:', entry.intersectionRatio);
-                                
-                                viewabilityTimer = setTimeout(() => {
-                                    if (!impressionSent) {
-                                        impressionSent = true;
-                                        
-                                        const data = {
-                                            adId: '${bid.id || bid.seatbid?.[0]?.bid?.[0]?.id || "unknown"}',
-                                            timestamp: Date.now()
-                                        };
-                                        
-                                        console.log('Ad viewable for full duration', data);
-                                        
-                                        sendTrackingPing(data);
-                                        
-                                        // Don't remove the tracker - just disconnect observer
-                                        observer.disconnect();
-                                    }
-                                }, REQUIRED_VIEWABLE_TIME);
-                            }
-                        } else {
-                            if (viewableStartTime) {
-                                clearTimeout(viewabilityTimer);
-                                viewableStartTime = null;
-                                console.log('Viewability interrupted, ratio:', entry.intersectionRatio);
-                            }
-                        }
+            function sendTrackingPing(trackingData) {
+                const baseUrl = '${trackingUrl}';
+                const queryParams = '?adId=' + encodeURIComponent(trackingData.adId) + 
+                                   '&time=' + trackingData.timestamp + 
+                                   '&type=viewable' +
+                                   '&ngrok-skip-browser-warning=true';
+                
+                // Multiple tracking methods for reliability
+                const img = new Image();
+                img.src = baseUrl + queryParams;
+                document.body.appendChild(img);
+                setTimeout(() => img.remove(), 5000); // Cleanup
+                
+                try {
+                    fetch(baseUrl + queryParams, { 
+                        method: 'GET', 
+                        mode: 'no-cors'
                     });
-                },
-                { 
-                    threshold: [0, VIEWABILITY_THRESHOLD, 1.0],
-                    root: null
+                } catch(e) {
+                    console.log('Fetch error:', e);
                 }
-            );
+                
+                try {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('GET', baseUrl + queryParams, true);
+                    xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
+                    xhr.send();
+                } catch(e) {
+                    console.log('XHR error:', e);
+                }
+                
+                console.log('Tracking ping sent:', baseUrl + queryParams);
+            }
             
-            observer.observe(tracker);
-            console.log('Started observing tracker');
-        }
-        
-        // Handle visibility changes
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
+            // Create and setup tracker element
+            const tracker = document.createElement('div');
+            tracker.setAttribute('data-purpose', 'viewability-tracker');
+            
+            // Set styles individually to avoid template literal syntax issues
+            tracker.style.position = 'absolute';
+            tracker.style.top = '0';
+            tracker.style.left = '0';
+            tracker.style.width = '100%';
+            tracker.style.height = '100%';
+            tracker.style.pointerEvents = 'none';
+            tracker.style.zIndex = '-1';
+            tracker.style.opacity = '0';
+            tracker.style.background = 'transparent';
+            
+            // Ensure container has proper positioning
+            if (getComputedStyle(container).position === 'static') {
+                container.style.position = 'relative';
+            }
+            
+            // Add tracker to container
+            container.appendChild(tracker);
+            console.log('Tracker element added to container');
+            
+            // Advanced viewability tracking
+            let viewableStartTime = null;
+            let viewabilityTimer = null;
+            let impressionSent = false;
+            let observer = null;
+            
+            function resetTracking() {
                 if (viewableStartTime) {
                     clearTimeout(viewabilityTimer);
                     viewableStartTime = null;
-                    console.log('Page visibility lost, tracking reset');
                 }
-            } else {
-                resetTracking();
+                impressionSent = false;
+                
+                if (observer) {
+                    observer.disconnect();
+                }
+                
+                observer = new IntersectionObserver(
+                    (entries) => {
+                        entries.forEach(entry => {
+                            const isViewable = entry.isIntersecting && 
+                                              entry.intersectionRatio >= VIEWABILITY_THRESHOLD;
+                            const isPageVisible = !document.hidden;
+                            
+                            if (isViewable && isPageVisible) {
+                                if (!viewableStartTime && !impressionSent) {
+                                    viewableStartTime = Date.now();
+                                    console.log('Ad started viewing, ratio:', entry.intersectionRatio);
+                                    
+                                    viewabilityTimer = setTimeout(() => {
+                                        if (!impressionSent) {
+                                            impressionSent = true;
+                                            
+                                            const data = {
+                                                adId: '${bid.id || bid.seatbid?.[0]?.bid?.[0]?.id || "unknown"}',
+                                                timestamp: Date.now()
+                                            };
+                                            
+                                            console.log('Ad viewable for full duration', data);
+                                            
+                                            sendTrackingPing(data);
+                                            
+                                            // Don't remove the tracker - just disconnect observer
+                                            observer.disconnect();
+                                        }
+                                    }, REQUIRED_VIEWABLE_TIME);
+                                }
+                            } else {
+                                if (viewableStartTime) {
+                                    clearTimeout(viewabilityTimer);
+                                    viewableStartTime = null;
+                                    console.log('Viewability interrupted, ratio:', entry.intersectionRatio);
+                                }
+                            }
+                        });
+                    },
+                    { 
+                        threshold: [0, VIEWABILITY_THRESHOLD, 1.0],
+                        root: null
+                    }
+                );
+                
+                observer.observe(tracker);
+                console.log('Started observing tracker');
             }
-        });
-        
-        // Start tracking
-        resetTracking();
-    }
+            
+            // Handle visibility changes
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    if (viewableStartTime) {
+                        clearTimeout(viewabilityTimer);
+                        viewableStartTime = null;
+                        console.log('Page visibility lost, tracking reset');
+                    }
+                } else {
+                    resetTracking();
+                }
+            });
+            
+            // Start tracking
+            resetTracking();
+        }
+    
+        // Start initialization when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeTracking);
+        } else {
+            initializeTracking();
+        }
+    })();
 
-    // Start initialization when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeTracking);
-    } else {
-        initializeTracking();
-    }
-})();
         <\/script>
         `;
 
